@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-	"errors"
 	"net/http"
 	"social/internal/store"
 	"strconv"
@@ -150,32 +148,32 @@ func (app *application) activateUserHandler(w http.ResponseWriter, r *http.Reque
 
 // --- Middleware & Helpers (No Swagger comments needed here) ---
 
-func (app *application) userContextMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userId, err := strconv.ParseInt(chi.URLParam(r, "userID"), 10, 64)
+// func (app *application) userContextMiddleware(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		userId, err := strconv.ParseInt(chi.URLParam(r, "userID"), 10, 64)
 
-		if err != nil {
-			app.badRequestError(w, r, err)
-			return
-		}
+// 		if err != nil {
+// 			app.badRequestError(w, r, err)
+// 			return
+// 		}
 
-		ctx := r.Context()
+// 		ctx := r.Context()
 
-		user, err := app.store.Users.GetByID(ctx, userId)
+// 		user, err := app.store.Users.GetByID(ctx, userId)
 
-		if err != nil {
-			switch {
-			case errors.Is(err, store.ErrNotFound):
-				app.badRequestError(w, r, err)
-			default:
-				app.internalServerError(w, r, err)
-			}
-			return
-		}
-		ctx = context.WithValue(ctx, userCtx, user)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-}
+// 		if err != nil {
+// 			switch {
+// 			case errors.Is(err, store.ErrNotFound):
+// 				app.badRequestError(w, r, err)
+// 			default:
+// 				app.internalServerError(w, r, err)
+// 			}
+// 			return
+// 		}
+// 		ctx = context.WithValue(ctx, userCtx, user)
+// 		next.ServeHTTP(w, r.WithContext(ctx))
+// 	})
+// }
 
 func getUserFromContext(r *http.Request) *store.User {
 	user, _ := r.Context().Value(userCtx).(*store.User)
